@@ -1,0 +1,160 @@
+<div class="encabezado">
+  <h2>Almacenes</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nuevo almacén
+  </button>
+</div>
+
+@if (errorAccion()) {
+  <p class="error">{{ errorAccion() }}</p>
+}
+
+<nz-table [nzData]="almacenes()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Dirección</th>
+      <th>Estado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (almacen of almacenes(); track almacen.id) {
+      <tr>
+        <td>{{ almacen.nombre }}</td>
+        <td>{{ almacen.direccion.direccionLinea }}</td>
+        <td>
+          @if (almacen.activo) {
+            <nz-tag nzColor="success">Activo</nz-tag>
+          } @else {
+            <nz-tag nzColor="default">Inactivo</nz-tag>
+          }
+        </td>
+        <td class="acciones">
+          <a (click)="abrirEditar(almacen)">Editar</a>
+          <a (click)="abrirEncargados(almacen)">Encargados</a>
+          @if (almacen.activo) {
+            <a nz-popconfirm nzPopconfirmTitle="¿Desactivar este almacén?" (nzOnConfirm)="desactivar(almacen)">Desactivar</a>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar almacén' : 'Nuevo almacén'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" placeholder="ej. Almacén central" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Dirección</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="direccionLinea" placeholder="Av. / calle, número" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <div class="fila">
+        <nz-form-item class="campo">
+          <nz-form-label>País</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="pais" placeholder="Perú" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="campo">
+          <nz-form-label>Departamento</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="departamento" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="campo">
+          <nz-form-label>Distrito</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="distrito" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [nzVisible]="encargadosModalVisible()"
+  [nzTitle]="'Encargados de ' + almacenSeleccionado()?.nombre"
+  (nzOnCancel)="cerrarEncargados()"
+  [nzFooter]="null"
+>
+  <ng-container *nzModalContent>
+    @if (errorEncargado()) {
+      <nz-alert nzType="error" [nzMessage]="errorEncargado()" nzShowIcon class="alerta"></nz-alert>
+    }
+
+    <nz-table [nzData]="encargados()" [nzLoading]="cargandoEncargados()" [nzShowPagination]="false" class="tabla-encargados">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Cargo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (encargado of encargados(); track encargado.id) {
+          <tr>
+            <td>{{ encargado.usuarioNombre }}</td>
+            <td>
+              @if (encargado.tipoCargo === 'LIDER') {
+                <nz-tag nzColor="blue">Líder</nz-tag>
+              } @else {
+                <nz-tag>Empleado</nz-tag>
+              }
+            </td>
+            <td>
+              <a nz-popconfirm nzPopconfirmTitle="¿Quitar a este encargado?" (nzOnConfirm)="quitarEncargado(encargado)">Quitar</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+
+    <form nz-form nzLayout="inline" [formGroup]="formularioEncargado" class="form-encargado">
+      <nz-form-item class="campo">
+        <nz-form-control>
+          <nz-select formControlName="usuarioId" nzPlaceHolder="Selecciona un usuario">
+            @for (u of usuarios(); track u.id) {
+              <nz-option [nzValue]="u.id" [nzLabel]="u.nombre + ' ' + u.apellidos"></nz-option>
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item class="campo-cargo">
+        <nz-form-control>
+          <nz-select formControlName="tipoCargo">
+            @for (t of tiposCargo; track t.valor) {
+              <nz-option [nzValue]="t.valor" [nzLabel]="t.etiqueta"></nz-option>
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <button nz-button nzType="primary" type="button" [nzLoading]="guardandoEncargado()" (click)="asignarEncargado()">Asignar</button>
+    </form>
+  </ng-container>
+</nz-modal>

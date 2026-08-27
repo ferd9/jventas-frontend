@@ -1,0 +1,46 @@
+<div class="encabezado">
+  <h2>Listas de precio</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nueva lista
+  </button>
+</div>
+
+<nz-table [nzData]="listas()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (lista of listas(); track lista.id) {
+      <tr>
+        <td>{{ lista.nombre }}</td>
+        <td><a (click)="abrirEditar(lista)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar lista de precio' : 'Nueva lista de precio'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" placeholder="ej. Mayorista" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

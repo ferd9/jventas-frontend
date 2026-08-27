@@ -1,0 +1,59 @@
+<div class="encabezado">
+  <h2>Modelos</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nuevo modelo
+  </button>
+</div>
+
+<nz-table [nzData]="modelos()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Marca</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (modelo of modelos(); track modelo.id) {
+      <tr>
+        <td>{{ modelo.nombre }}</td>
+        <td>{{ nombreMarca(modelo.marcaId) }}</td>
+        <td><a (click)="abrirEditar(modelo)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar modelo' : 'Nuevo modelo'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Marca</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="marcaId" nzPlaceHolder="Selecciona una marca">
+            @for (m of marcas(); track m.id) {
+              <nz-option [nzValue]="m.id" [nzLabel]="m.nombre"></nz-option>
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" placeholder="ej. Galaxy A54" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

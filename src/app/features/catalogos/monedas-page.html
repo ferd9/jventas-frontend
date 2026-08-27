@@ -1,0 +1,29 @@
+<div class="encabezado">
+  <h2>Monedas</h2>
+</div>
+<p class="nota">Catálogo fijo del sistema -- no se crea ni edita desde aquí.</p>
+
+<nz-table [nzData]="monedas()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Símbolo</th>
+      <th>Código ISO</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (moneda of monedas(); track moneda.id) {
+      <tr>
+        <td>{{ moneda.nombre }}</td>
+        <td>{{ moneda.simbolo }}</td>
+        <td>{{ moneda.codigoIso }}</td>
+        <td>
+          @if (moneda.predeterminada) {
+            <nz-tag nzColor="processing">Predeterminada</nz-tag>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</nz-table>

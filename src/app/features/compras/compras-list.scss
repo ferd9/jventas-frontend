@@ -1,0 +1,135 @@
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filtro-proveedor {
+  width: 280px;
+}
+
+.filtro-fecha {
+  padding: 4px 11px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.separador {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.cabecera-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tabla-lineas {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+
+  th,
+  td {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  th:not(:first-child),
+  td:not(:first-child) {
+    text-align: right;
+  }
+}
+
+.totales {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  margin-bottom: 20px;
+
+  .total-final {
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .saldo-pendiente {
+    font-weight: 600;
+    color: #d4380d;
+  }
+}
+
+.error-anular {
+  color: #cf1322;
+  margin-bottom: 12px;
+}
+
+.acciones-detalle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.titulo-devoluciones {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.devolucion-item {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+
+  ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+  }
+}
+
+.devolucion-motivo {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.nota-devolucion {
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.tabla-devolucion {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+
+  th,
+  td {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+}
+
+.campo-motivo {
+  display: block;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.85);
+}

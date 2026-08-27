@@ -1,0 +1,54 @@
+<div class="encabezado">
+  <h2>Cargos</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nuevo cargo
+  </button>
+</div>
+
+<nz-table [nzData]="cargos()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Estado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (cargo of cargos(); track cargo.id) {
+      <tr>
+        <td>{{ cargo.nombre }}</td>
+        <td>
+          @if (cargo.activo) {
+            <nz-tag nzColor="success">Activo</nz-tag>
+          } @else {
+            <nz-tag nzColor="default">Inactivo</nz-tag>
+          }
+        </td>
+        <td><a (click)="abrirEditar(cargo)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar cargo' : 'Nuevo cargo'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" placeholder="ej. Vendedor" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

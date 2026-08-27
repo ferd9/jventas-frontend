@@ -1,0 +1,19 @@
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.alerta {
+  margin-bottom: 16px;
+}
+
+label[nz-checkbox] {
+  margin-right: 16px;
+  margin-left: 0;
+}

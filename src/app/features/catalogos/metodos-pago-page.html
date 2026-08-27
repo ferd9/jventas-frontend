@@ -1,0 +1,46 @@
+<div class="encabezado">
+  <h2>Métodos de pago</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nuevo método de pago
+  </button>
+</div>
+
+<nz-table [nzData]="metodos()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (metodo of metodos(); track metodo.id) {
+      <tr>
+        <td>{{ metodo.nombre }}</td>
+        <td><a (click)="abrirEditar(metodo)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar método de pago' : 'Nuevo método de pago'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" placeholder="ej. Yape" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

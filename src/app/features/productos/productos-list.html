@@ -1,0 +1,65 @@
+<div class="encabezado">
+  <h2>Productos</h2>
+  <button nz-button nzType="primary" routerLink="/productos/nuevo">
+    <span nz-icon nzType="plus"></span>
+    Nuevo producto
+  </button>
+</div>
+
+<input
+  nz-input
+  placeholder="Buscar por nombre..."
+  class="buscador"
+  [ngModel]="busqueda()"
+  (ngModelChange)="buscar($event)"
+/>
+
+@if (errorAccion()) {
+  <p class="error">{{ errorAccion() }}</p>
+}
+
+<nz-table
+  #tabla
+  [nzData]="productos()"
+  [nzFrontPagination]="false"
+  [nzTotal]="total()"
+  [nzLoading]="cargando()"
+  [nzPageSize]="20"
+  (nzQueryParams)="cambiarPagina($event)"
+>
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Código de barras</th>
+      <th>Nombre</th>
+      <th>Categoría</th>
+      <th>Marca</th>
+      <th>Estado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (producto of tabla.data; track producto.id) {
+      <tr>
+        <td>{{ producto.codigo }}</td>
+        <td>{{ producto.codigoBarras }}</td>
+        <td>{{ producto.nombre }}</td>
+        <td>{{ producto.categoriaNombre || '—' }}</td>
+        <td>{{ producto.marcaNombre || '—' }}</td>
+        <td>
+          @if (producto.activo) {
+            <nz-tag nzColor="success">Activo</nz-tag>
+          } @else {
+            <nz-tag nzColor="default">Inactivo</nz-tag>
+          }
+        </td>
+        <td class="acciones">
+          <a [routerLink]="['/productos', producto.id, 'editar']">Editar</a>
+          @if (producto.activo) {
+            <a nz-popconfirm nzPopconfirmTitle="¿Desactivar este producto?" (nzOnConfirm)="desactivar(producto)">Desactivar</a>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</nz-table>

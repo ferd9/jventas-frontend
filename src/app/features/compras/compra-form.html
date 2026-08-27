@@ -1,0 +1,175 @@
+<h2>Nueva compra</h2>
+
+@if (error()) {
+  <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+}
+
+<form nz-form nzLayout="vertical" [formGroup]="formulario" (ngSubmit)="enviar()">
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Tipo de documento</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="tipoDocumentoId" nzPlaceHolder="Selecciona">
+          @for (t of tiposDocumento(); track t.id) {
+            <nz-option [nzValue]="t.id" [nzLabel]="t.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label [nzRequired]="!formulario.controls.serieDocumentoId.value">N° de documento</nz-form-label>
+      <nz-form-control [nzErrorTip]="numeroDocumentoErrorTpl">
+        <input nz-input formControlName="numeroDocumento" maxlength="20" placeholder="ej. F001-000123" />
+      </nz-form-control>
+      <ng-template #numeroDocumentoErrorTpl let-control>
+        @if (control.hasError('required')) {
+          Campo obligatorio
+        } @else if (control.hasError('maxlength')) {
+          Máximo 20 caracteres
+        }
+      </ng-template>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Serie (numeración automática)</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="serieDocumentoId" nzPlaceHolder="Manual" nzAllowClear [nzDisabled]="series().length === 0">
+          @for (s of series(); track s.id) {
+            <nz-option [nzValue]="s.id" [nzLabel]="s.serie + ' (próximo: ' + s.proximoNumero + ')'"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label>Fecha de vencimiento</nz-form-label>
+      <nz-form-control>
+        <input type="date" nz-input formControlName="fechaVencimiento" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Proveedor</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="proveedorId" nzPlaceHolder="Selecciona un proveedor" nzShowSearch>
+          @for (p of proveedores(); track p.id) {
+            <nz-option [nzValue]="p.id" [nzLabel]="p.razonSocial"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Almacén</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="almacenId" nzPlaceHolder="Selecciona un almacén">
+          @for (a of almacenes(); track a.id) {
+            <nz-option [nzValue]="a.id" [nzLabel]="a.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Moneda</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="monedaId" nzPlaceHolder="Selecciona una moneda">
+          @for (m of monedas(); track m.id) {
+            <nz-option [nzValue]="m.id" [nzLabel]="m.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <nz-form-item>
+    <nz-form-label>Observaciones</nz-form-label>
+    <nz-form-control>
+      <textarea nz-input formControlName="observaciones" rows="2"></textarea>
+    </nz-form-control>
+  </nz-form-item>
+
+  <h3>Líneas</h3>
+  <div formArrayName="detalles">
+    @for (fila of detalles.controls; track $index) {
+      <div class="linea" [formGroupName]="$index">
+        <div class="linea-campos">
+          <nz-form-item class="campo campo-producto">
+            <nz-form-label>Producto</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="productoId" nzPlaceHolder="Selecciona un producto" nzShowSearch>
+                @for (p of productos(); track p.id) {
+                  <nz-option [nzValue]="p.id" [nzLabel]="p.codigo + ' -- ' + p.nombre"></nz-option>
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="campo">
+            <nz-form-label>Cantidad</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="cantidad" [nzMin]="1" style="width: 100%"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="campo">
+            <nz-form-label>Precio unitario</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="precioUnitario" [nzMin]="0" [nzStep]="0.1" style="width: 100%"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="campo">
+            <nz-form-label>Descuento %</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="descuentoPct" [nzMin]="0" [nzMax]="100" style="width: 100%"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="campo">
+            <nz-form-label>Impuesto</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="impuestoId" nzPlaceHolder="Sin impuesto" nzAllowClear>
+                @for (i of impuestos(); track i.id) {
+                  <nz-option [nzValue]="i.id" [nzLabel]="i.nombre + ' (' + i.tasa + '%)'"></nz-option>
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <button nz-button nzType="text" nzDanger type="button" (click)="quitarFila($index)" [disabled]="detalles.length <= 1">
+            <span nz-icon nzType="delete"></span>
+          </button>
+        </div>
+
+        @if (fila.get('requiereSerie')!.value) {
+          <div class="series" formArrayName="numerosSerie">
+            <span class="series-label">Números de serie:</span>
+            @for (serie of seriesDe($index).controls; track $index) {
+              <input nz-input class="serie-input" [formControlName]="$index" placeholder="Serie {{ $index + 1 }}" />
+            }
+          </div>
+        }
+
+        <div class="linea-totales">
+          Subtotal: {{ calcularLinea($index).subtotal | number: '1.2-2' }} · Impuesto: {{ calcularLinea($index).montoImpuesto | number: '1.2-2' }}
+          · <strong>Total línea: {{ calcularLinea($index).total | number: '1.2-2' }}</strong>
+        </div>
+      </div>
+    }
+  </div>
+  <button nz-button type="button" (click)="agregarFila()" class="boton-agregar">
+    <span nz-icon nzType="plus"></span>
+    Agregar línea
+  </button>
+
+  <div class="total-general">Total de la compra: {{ totalGeneral() | number: '1.2-2' }}</div>
+
+  <div class="acciones">
+    <button nz-button routerLink="/compras" type="button">Cancelar</button>
+    <button nz-button nzType="primary" [nzLoading]="guardando()" type="submit">Guardar</button>
+  </div>
+</form>

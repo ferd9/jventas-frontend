@@ -1,0 +1,22 @@
+.alerta {
+  margin-bottom: 16px;
+}
+
+.fila {
+  display: flex;
+  gap: 16px;
+
+  .campo {
+    flex: 1;
+  }
+
+  .campo-ancho {
+    flex: 2;
+  }
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

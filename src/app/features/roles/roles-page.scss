@@ -1,0 +1,47 @@
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.alerta {
+  margin-bottom: 16px;
+}
+
+.fila {
+  display: flex;
+  gap: 16px;
+
+  .campo {
+    flex: 1;
+  }
+}
+
+.grupos-permisos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.grupo-titulo {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 2px;
+}

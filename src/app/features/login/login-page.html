@@ -1,0 +1,35 @@
+<div class="contenedor-login">
+  <div class="tarjeta-login">
+    <h1>JVentas</h1>
+    <p class="subtitulo">Ingresa con tu usuario y contraseña</p>
+
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+
+    <form nz-form nzLayout="vertical" [formGroup]="formulario" (ngSubmit)="enviar()">
+      <nz-form-item>
+        <nz-form-label nzFor="login">Usuario</nz-form-label>
+        <nz-form-control>
+          <input nz-input id="login" formControlName="login" placeholder="tu usuario" autocomplete="username" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzFor="password">Contraseña</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="tu contraseña"
+            autocomplete="current-password"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <button nz-button nzType="primary" nzBlock [nzLoading]="cargando()" type="submit">Ingresar</button>
+    </form>
+  </div>
+</div>

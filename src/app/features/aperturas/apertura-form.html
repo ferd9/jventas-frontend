@@ -1,0 +1,86 @@
+<h2>Apertura de stock</h2>
+<p class="ayuda">
+  Registra el stock inicial de un almacén nuevo (o de un producto que nunca tuvo stock ahí). Solo sirve para carga inicial -- si el
+  producto ya tiene stock en ese almacén, la línea se rechaza; para ajustarlo usa una compra, venta o traslado.
+</p>
+
+@if (resultado()) {
+  <nz-alert nzType="success" nzMessage="Apertura registrada" nzShowIcon class="alerta"></nz-alert>
+
+  <nz-table [nzData]="resultado()!" [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad registrada</th>
+        <th>Actualizado</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (s of resultado(); track s.productoId) {
+        <tr>
+          <td>{{ s.productoNombre }}</td>
+          <td>{{ s.cantidadActual }}</td>
+          <td>{{ s.actualizadoEn | date: 'dd/MM/yyyy HH:mm' }}</td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+
+  <div class="acciones">
+    <button nz-button nzType="primary" (click)="nuevaApertura()">Registrar otra apertura</button>
+  </div>
+} @else {
+  @if (error()) {
+    <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+  }
+
+  <form nz-form nzLayout="vertical" [formGroup]="formulario" (ngSubmit)="enviar()">
+    <nz-form-item class="campo-almacen">
+      <nz-form-label nzRequired>Almacén</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="almacenId" nzPlaceHolder="Selecciona un almacén">
+          @for (a of almacenes(); track a.id) {
+            <nz-option [nzValue]="a.id" [nzLabel]="a.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <h3>Líneas</h3>
+    <div formArrayName="detalles">
+      @for (fila of detalles.controls; track fila; let i = $index) {
+        <div class="linea" [formGroupName]="i">
+          <nz-form-item class="campo campo-producto">
+            <nz-form-label>Producto</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="productoId" nzPlaceHolder="Selecciona un producto" nzShowSearch>
+                @for (p of productos(); track p.id) {
+                  <nz-option [nzValue]="p.id" [nzLabel]="p.codigo + ' -- ' + p.nombre"></nz-option>
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item class="campo">
+            <nz-form-label>Cantidad</nz-form-label>
+            <nz-form-control>
+              <nz-input-number formControlName="cantidad" [nzMin]="1" style="width: 100%"></nz-input-number>
+            </nz-form-control>
+          </nz-form-item>
+
+          <button nz-button nzType="text" nzDanger type="button" (click)="quitarFila(i)" [disabled]="detalles.length <= 1">
+            <span nz-icon nzType="delete"></span>
+          </button>
+        </div>
+      }
+    </div>
+    <button nz-button type="button" (click)="agregarFila()" class="boton-agregar">
+      <span nz-icon nzType="plus"></span>
+      Agregar línea
+    </button>
+
+    <div class="acciones">
+      <button nz-button nzType="primary" [nzLoading]="guardando()" type="submit">Registrar apertura</button>
+    </div>
+  </form>
+}

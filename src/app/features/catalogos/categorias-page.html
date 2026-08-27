@@ -1,0 +1,69 @@
+<div class="encabezado">
+  <h2>Categorías</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nueva categoría
+  </button>
+</div>
+
+<nz-table [nzData]="categorias()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Categoría padre</th>
+      <th>Requiere serie</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (categoria of categorias(); track categoria.id) {
+      <tr>
+        <td>{{ categoria.nombre }}</td>
+        <td>{{ nombrePadre(categoria.categoriaPadreId) }}</td>
+        <td>
+          @if (categoria.requiereSerie) {
+            <nz-tag nzColor="processing">Sí</nz-tag>
+          } @else {
+            <nz-tag>No</nz-tag>
+          }
+        </td>
+        <td><a (click)="abrirEditar(categoria)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar categoría' : 'Nueva categoría'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Categoría padre</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="categoriaPadreId" nzPlaceHolder="Opcional (sin jerarquía)" nzAllowClear>
+            @for (c of opcionesPadre(); track c.id) {
+              <nz-option [nzValue]="c.id" [nzLabel]="c.nombre"></nz-option>
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <label nz-checkbox formControlName="requiereSerie">Requiere número de serie por unidad</label>
+    </form>
+  </ng-container>
+</nz-modal>

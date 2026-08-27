@@ -1,0 +1,67 @@
+<div class="encabezado">
+  <h2>Clientes</h2>
+  <button nz-button nzType="primary" routerLink="/clientes/nuevo">
+    <span nz-icon nzType="plus"></span>
+    Nuevo cliente
+  </button>
+</div>
+
+<input
+  nz-input
+  placeholder="Buscar por nombre o apellidos..."
+  class="buscador"
+  [ngModel]="busqueda()"
+  (ngModelChange)="buscar($event)"
+/>
+
+<nz-table
+  #tabla
+  [nzData]="clientes()"
+  [nzFrontPagination]="false"
+  [nzTotal]="total()"
+  [nzLoading]="cargando()"
+  [nzPageSize]="20"
+  (nzQueryParams)="cambiarPagina($event)"
+>
+  <thead>
+    <tr>
+      <th>RUC / DNI</th>
+      <th>Nombre</th>
+      <th>Tipo</th>
+      <th>Teléfono</th>
+      <th>Estado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (cliente of tabla.data; track cliente.id) {
+      <tr>
+        <td>{{ cliente.ruc || cliente.dni || '—' }}</td>
+        <td>{{ cliente.nombre }} {{ cliente.apellidos }}</td>
+        <td>{{ cliente.tipo === 'NATURAL' ? 'Natural' : 'Jurídica' }}</td>
+        <td>{{ cliente.telefono || cliente.celular || '—' }}</td>
+        <td>
+          @if (cliente.activo) {
+            <nz-tag nzColor="success">Activo</nz-tag>
+          } @else {
+            <nz-tag nzColor="default">Inactivo</nz-tag>
+          }
+        </td>
+        <td class="acciones">
+          <a [routerLink]="['/clientes', cliente.id, 'editar']">Editar</a>
+          @if (cliente.activo) {
+            <a
+              nz-popconfirm
+              nzPopconfirmTitle="¿Desactivar este cliente?"
+              (nzOnConfirm)="desactivar(cliente)"
+            >
+              Desactivar
+            </a>
+          } @else {
+            <a (click)="reactivar(cliente)">Reactivar</a>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</nz-table>

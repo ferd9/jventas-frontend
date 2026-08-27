@@ -1,0 +1,55 @@
+<div class="encabezado">
+  <h2>Unidades de medida</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nueva unidad de medida
+  </button>
+</div>
+
+<nz-table [nzData]="unidades()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Abreviatura</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (unidad of unidades(); track unidad.id) {
+      <tr>
+        <td>{{ unidad.nombre }}</td>
+        <td>{{ unidad.abreviatura || '—' }}</td>
+        <td><a (click)="abrirEditar(unidad)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar unidad de medida' : 'Nueva unidad de medida'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" placeholder="ej. Caja" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Abreviatura</nz-form-label>
+        <nz-form-control nzErrorTip="Máximo 10 caracteres">
+          <input nz-input formControlName="abreviatura" maxlength="10" placeholder="ej. CAJ" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

@@ -1,0 +1,222 @@
+import { Routes } from '@angular/router';
+import { authGuard, permisoGuard } from './core/auth/auth.guard';
+
+export const routes: Routes = [
+  {
+    path: 'login',
+    loadComponent: () => import('./features/login/login-page').then((m) => m.LoginPage),
+  },
+  {
+    path: '',
+    loadComponent: () => import('./layout/shell').then((m) => m.Shell),
+    canActivate: [authGuard],
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'productos' },
+      {
+        path: 'productos',
+        canActivate: [permisoGuard],
+        data: { permiso: 'producto:ver' },
+        loadComponent: () => import('./features/productos/productos-list').then((m) => m.ProductosList),
+      },
+      {
+        path: 'productos/nuevo',
+        canActivate: [permisoGuard],
+        data: { permiso: 'producto:crear' },
+        loadComponent: () => import('./features/productos/producto-form').then((m) => m.ProductoForm),
+      },
+      {
+        path: 'productos/:id/editar',
+        canActivate: [permisoGuard],
+        data: { permiso: 'producto:editar' },
+        loadComponent: () => import('./features/productos/producto-form').then((m) => m.ProductoForm),
+      },
+      {
+        path: 'clientes',
+        canActivate: [permisoGuard],
+        data: { permiso: 'cliente:ver' },
+        loadComponent: () => import('./features/clientes/clientes-list').then((m) => m.ClientesList),
+      },
+      {
+        path: 'clientes/nuevo',
+        canActivate: [permisoGuard],
+        data: { permiso: 'cliente:crear' },
+        loadComponent: () => import('./features/clientes/cliente-form').then((m) => m.ClienteForm),
+      },
+      {
+        path: 'clientes/:id/editar',
+        canActivate: [permisoGuard],
+        data: { permiso: 'cliente:editar' },
+        loadComponent: () => import('./features/clientes/cliente-form').then((m) => m.ClienteForm),
+      },
+      {
+        path: 'proveedores',
+        canActivate: [permisoGuard],
+        data: { permiso: 'proveedor:ver' },
+        loadComponent: () => import('./features/proveedores/proveedores-list').then((m) => m.ProveedoresList),
+      },
+      {
+        path: 'proveedores/nuevo',
+        canActivate: [permisoGuard],
+        data: { permiso: 'proveedor:crear' },
+        loadComponent: () => import('./features/proveedores/proveedor-form').then((m) => m.ProveedorForm),
+      },
+      {
+        path: 'proveedores/:id/editar',
+        canActivate: [permisoGuard],
+        data: { permiso: 'proveedor:editar' },
+        loadComponent: () => import('./features/proveedores/proveedor-form').then((m) => m.ProveedorForm),
+      },
+      {
+        path: 'categorias',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/categorias-page').then((m) => m.CategoriasPage),
+      },
+      {
+        path: 'marcas',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/marcas-page').then((m) => m.MarcasPage),
+      },
+      {
+        path: 'listas-precio',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/listas-precio-page').then((m) => m.ListasPrecioPage),
+      },
+      {
+        path: 'monedas',
+        loadComponent: () => import('./features/catalogos/monedas-page').then((m) => m.MonedasPage),
+      },
+      {
+        path: 'modelos',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/modelos-page').then((m) => m.ModelosPage),
+      },
+      {
+        path: 'unidades-medida',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/unidades-medida-page').then((m) => m.UnidadesMedidaPage),
+      },
+      {
+        path: 'impuestos',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/impuestos-page').then((m) => m.ImpuestosPage),
+      },
+      {
+        path: 'metodos-pago',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/metodos-pago-page').then((m) => m.MetodosPagoPage),
+      },
+      {
+        path: 'tipos-documento',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/tipos-documento-page').then((m) => m.TiposDocumentoPage),
+      },
+      {
+        path: 'series-documento',
+        canActivate: [permisoGuard],
+        data: { permiso: 'catalogo:administrar' },
+        loadComponent: () => import('./features/catalogos/series-documento-page').then((m) => m.SeriesDocumentoPage),
+      },
+      {
+        path: 'almacenes',
+        canActivate: [permisoGuard],
+        data: { permiso: 'almacen:ver' },
+        loadComponent: () => import('./features/catalogos/almacenes-page').then((m) => m.AlmacenesPage),
+      },
+      {
+        path: 'cargos',
+        canActivate: [permisoGuard],
+        data: { permiso: 'usuario:administrar' },
+        loadComponent: () => import('./features/catalogos/cargos-page').then((m) => m.CargosPage),
+      },
+      {
+        path: 'compras',
+        canActivate: [permisoGuard],
+        data: { permiso: 'compra:ver' },
+        loadComponent: () => import('./features/compras/compras-list').then((m) => m.ComprasList),
+      },
+      {
+        path: 'compras/nueva',
+        canActivate: [permisoGuard],
+        data: { permiso: 'compra:crear' },
+        loadComponent: () => import('./features/compras/compra-form').then((m) => m.CompraForm),
+      },
+      {
+        path: 'ventas',
+        canActivate: [permisoGuard],
+        data: { permiso: 'venta:ver' },
+        loadComponent: () => import('./features/ventas/ventas-list').then((m) => m.VentasList),
+      },
+      {
+        path: 'ventas/nueva',
+        canActivate: [permisoGuard],
+        data: { permiso: 'venta:crear' },
+        loadComponent: () => import('./features/ventas/venta-form').then((m) => m.VentaForm),
+      },
+      {
+        path: 'kardex',
+        canActivate: [permisoGuard],
+        data: { permiso: 'kardex:ver' },
+        loadComponent: () => import('./features/kardex/kardex-page').then((m) => m.KardexPage),
+      },
+      {
+        path: 'aperturas',
+        canActivate: [permisoGuard],
+        data: { permiso: 'almacen:apertura' },
+        loadComponent: () => import('./features/aperturas/apertura-form').then((m) => m.AperturaForm),
+      },
+      {
+        path: 'traslados',
+        canActivate: [permisoGuard],
+        data: { permiso: 'traslado:ver' },
+        loadComponent: () => import('./features/traslados/traslados-list').then((m) => m.TrasladosList),
+      },
+      {
+        path: 'traslados/nuevo',
+        canActivate: [permisoGuard],
+        data: { permiso: 'traslado:crear' },
+        loadComponent: () => import('./features/traslados/traslado-form').then((m) => m.TrasladoForm),
+      },
+      {
+        path: 'reportes',
+        loadComponent: () => import('./features/reportes/reportes-page').then((m) => m.ReportesPage),
+      },
+      {
+        path: 'usuarios',
+        canActivate: [permisoGuard],
+        data: { permiso: 'usuario:administrar' },
+        loadComponent: () => import('./features/usuarios/usuarios-list').then((m) => m.UsuariosList),
+      },
+      {
+        path: 'usuarios/nuevo',
+        canActivate: [permisoGuard],
+        data: { permiso: 'usuario:administrar' },
+        loadComponent: () => import('./features/usuarios/usuario-form').then((m) => m.UsuarioForm),
+      },
+      {
+        path: 'usuarios/:id/editar',
+        canActivate: [permisoGuard],
+        data: { permiso: 'usuario:administrar' },
+        loadComponent: () => import('./features/usuarios/usuario-form').then((m) => m.UsuarioForm),
+      },
+      {
+        path: 'roles',
+        canActivate: [permisoGuard],
+        data: { permiso: 'usuario:administrar' },
+        loadComponent: () => import('./features/roles/roles-page').then((m) => m.RolesPage),
+      },
+      {
+        path: 'sin-permiso',
+        loadComponent: () => import('./features/sin-permiso/sin-permiso-page').then((m) => m.SinPermisoPage),
+      },
+    ],
+  },
+  { path: '**', redirectTo: '' },
+];

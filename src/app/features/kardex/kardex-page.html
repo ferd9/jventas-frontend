@@ -1,0 +1,71 @@
+<h2>Kardex</h2>
+
+<div class="filtros">
+  <nz-select
+    class="filtro"
+    [ngModel]="almacenId()"
+    (ngModelChange)="almacenId.set($event); buscar()"
+    nzPlaceHolder="Selecciona un almacén"
+  >
+    @for (a of almacenes(); track a.id) {
+      <nz-option [nzValue]="a.id" [nzLabel]="a.nombre"></nz-option>
+    }
+  </nz-select>
+
+  <nz-select
+    class="filtro filtro-producto"
+    [ngModel]="productoId()"
+    (ngModelChange)="productoId.set($event); buscar()"
+    nzPlaceHolder="Selecciona un producto"
+    nzShowSearch
+  >
+    @for (p of productos(); track p.id) {
+      <nz-option [nzValue]="p.id" [nzLabel]="p.codigo + ' -- ' + p.nombre"></nz-option>
+    }
+  </nz-select>
+
+  @if (stockActual() !== null) {
+    <nz-tag nzColor="processing" class="stock-tag">Stock actual: {{ stockActual() }}</nz-tag>
+  }
+</div>
+
+@if (!almacenId() || !productoId()) {
+  <p class="mensaje">Elige un almacén y un producto para ver su historial de movimientos.</p>
+} @else {
+  <nz-table
+    #tabla
+    [nzData]="movimientos()"
+    [nzFrontPagination]="false"
+    [nzTotal]="total()"
+    [nzLoading]="cargando()"
+    [nzPageSize]="20"
+    (nzQueryParams)="cambiarPagina($event)"
+  >
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Tipo</th>
+        <th>Documento</th>
+        <th>Entrada</th>
+        <th>Salida</th>
+        <th>Costo unit.</th>
+        <th>Costo total</th>
+        <th>Stock resultante</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (m of tabla.data; track m.id) {
+        <tr>
+          <td>{{ m.fecha }}</td>
+          <td>{{ tipoLabel[m.tipoDocumento] }}</td>
+          <td>{{ m.numeroDocumento || '—' }}</td>
+          <td>{{ m.entrada > 0 ? m.entrada : '—' }}</td>
+          <td>{{ m.salida > 0 ? m.salida : '—' }}</td>
+          <td>{{ m.costoUnitario | number: '1.2-2' }}</td>
+          <td>{{ m.costoTotal | number: '1.2-2' }}</td>
+          <td>{{ m.stockResultante }}</td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+}

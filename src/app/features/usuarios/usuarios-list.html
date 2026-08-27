@@ -1,0 +1,118 @@
+<div class="encabezado">
+  <h2>Usuarios</h2>
+  <button nz-button nzType="primary" routerLink="/usuarios/nuevo">
+    <span nz-icon nzType="plus"></span>
+    Nuevo usuario
+  </button>
+</div>
+
+@if (errorAccion()) {
+  <p class="error">{{ errorAccion() }}</p>
+}
+
+<nz-table
+  #tabla
+  [nzData]="usuarios()"
+  [nzFrontPagination]="false"
+  [nzTotal]="total()"
+  [nzLoading]="cargando()"
+  [nzPageSize]="20"
+  (nzQueryParams)="cambiarPagina($event)"
+>
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Login</th>
+      <th>Nombre</th>
+      <th>Cargo</th>
+      <th>Roles</th>
+      <th>Estado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (usuario of tabla.data; track usuario.id) {
+      <tr>
+        <td>{{ usuario.codigo }}</td>
+        <td>{{ usuario.login }}</td>
+        <td>{{ usuario.nombre }} {{ usuario.apellidos }}</td>
+        <td>{{ usuario.cargoNombre }}</td>
+        <td>
+          @for (rol of usuario.roles; track rol) {
+            <nz-tag>{{ rol }}</nz-tag>
+          }
+          @if (usuario.roles.length === 0) {
+            —
+          }
+        </td>
+        <td>
+          @if (usuario.activo) {
+            <nz-tag nzColor="success">Activo</nz-tag>
+          } @else {
+            <nz-tag nzColor="default">Inactivo</nz-tag>
+          }
+        </td>
+        <td class="acciones">
+          <a [routerLink]="['/usuarios', usuario.id, 'editar']">Editar</a>
+          <a (click)="verSesiones(usuario)">Ver sesiones</a>
+          <a
+            nz-popconfirm
+            nzPopconfirmTitle="¿Resetear la contraseña de este usuario? Se genera una nueva al azar."
+            (nzOnConfirm)="resetearPassword(usuario)"
+          >
+            Resetear contraseña
+          </a>
+          @if (usuario.activo) {
+            <a
+              nz-popconfirm
+              nzPopconfirmTitle="¿Desactivar este usuario?"
+              (nzOnConfirm)="desactivar(usuario)"
+            >
+              Desactivar
+            </a>
+          } @else {
+            <a (click)="reactivar(usuario)">Reactivar</a>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal [nzVisible]="passwordModalVisible()" nzTitle="Nueva contraseña generada" (nzOnCancel)="cerrarPasswordModal()">
+  <ng-container *nzModalContent>
+    <p class="nota">Cópiala ahora y compártela con el usuario -- no se puede volver a ver.</p>
+    <p class="password-generada">{{ passwordGenerada() }}</p>
+  </ng-container>
+  <div *nzModalFooter>
+    <button nz-button nzType="primary" (click)="cerrarPasswordModal()">Cerrar</button>
+  </div>
+</nz-modal>
+
+<nz-modal
+  [nzVisible]="sesionesModalVisible()"
+  [nzTitle]="'Sesiones de ' + sesionesUsuarioNombre()"
+  (nzOnCancel)="cerrarSesionesModal()"
+  [nzFooter]="null"
+>
+  <ng-container *nzModalContent>
+    <nz-table [nzData]="sesiones()" [nzLoading]="cargandoSesiones()" [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>IP</th>
+          <th>Navegador</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (sesion of sesiones(); track sesion.id) {
+          <tr>
+            <td>{{ sesion.fechaActividad | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ sesion.ipAddress || '—' }}</td>
+            <td class="navegador">{{ sesion.userAgent || '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </ng-container>
+</nz-modal>

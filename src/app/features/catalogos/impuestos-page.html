@@ -1,0 +1,69 @@
+<div class="encabezado">
+  <h2>Impuestos</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nuevo impuesto
+  </button>
+</div>
+
+<nz-table [nzData]="impuestos()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Tasa</th>
+      <th>Predeterminado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (impuesto of impuestos(); track impuesto.id) {
+      <tr>
+        <td>{{ impuesto.nombre }}</td>
+        <td>{{ impuesto.tasa }}%</td>
+        <td>
+          @if (impuesto.esDefault) {
+            <nz-tag nzColor="blue">Sí</nz-tag>
+          } @else {
+            —
+          }
+        </td>
+        <td><a (click)="abrirEditar(impuesto)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar impuesto' : 'Nuevo impuesto'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" placeholder="ej. IGV" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Tasa (%)</nz-form-label>
+        <nz-form-control>
+          <nz-input-number formControlName="tasa" [nzMin]="0" [nzMax]="100" [nzStep]="0.1" style="width: 100%"></nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <label nz-checkbox formControlName="esDefault">Usar como impuesto predeterminado</label>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

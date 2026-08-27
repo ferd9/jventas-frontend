@@ -1,0 +1,206 @@
+<h2>{{ productoId() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+@if (error()) {
+  <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+}
+
+<form nz-form nzLayout="vertical" [formGroup]="formulario" (ngSubmit)="enviar()">
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Código</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="codigo" placeholder="ej. PROD-001" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Código de barras</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="codigoBarras" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Código de fabricante</nz-form-label>
+      <nz-form-control nzErrorTip="Máximo 30 caracteres">
+        <input nz-input formControlName="codigoFabricante" maxlength="30" />
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <nz-form-item>
+    <nz-form-label nzRequired>Nombre</nz-form-label>
+    <nz-form-control>
+      <input nz-input formControlName="nombre" />
+    </nz-form-control>
+  </nz-form-item>
+
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Costo</nz-form-label>
+      <nz-form-control>
+        <nz-input-number formControlName="costo" [nzMin]="0" [nzStep]="0.1" style="width: 100%"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Stock mínimo</nz-form-label>
+      <nz-form-control>
+        <nz-input-number formControlName="stockMinimo" [nzMin]="0" style="width: 100%"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Tipo</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="tipo">
+          @for (t of tiposProducto; track t.valor) {
+            <nz-option [nzValue]="t.valor" [nzLabel]="t.etiqueta"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Moneda</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="monedaId" nzPlaceHolder="Selecciona una moneda">
+          @for (m of monedas(); track m.id) {
+            <nz-option [nzValue]="m.id" [nzLabel]="m.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Impuesto</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="impuestoId" nzPlaceHolder="Opcional" nzAllowClear>
+          @for (i of impuestos(); track i.id) {
+            <nz-option [nzValue]="i.id" [nzLabel]="i.nombre + ' (' + i.tasa + '%)'"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Unidad de medida</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="unidadMedidaId" nzPlaceHolder="Opcional" nzAllowClear>
+          @for (u of unidadesMedida(); track u.id) {
+            <nz-option [nzValue]="u.id" [nzLabel]="u.abreviatura ? u.nombre + ' (' + u.abreviatura + ')' : u.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label>Categoría</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="categoriaId" nzPlaceHolder="Opcional" nzAllowClear>
+          @for (c of categorias(); track c.id) {
+            <nz-option [nzValue]="c.id" [nzLabel]="c.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Marca</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="marcaId" nzPlaceHolder="Opcional" nzAllowClear>
+          @for (m of marcas(); track m.id) {
+            <nz-option [nzValue]="m.id" [nzLabel]="m.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Modelo</nz-form-label>
+      <nz-form-control>
+        <nz-select
+          formControlName="modeloId"
+          [nzPlaceHolder]="formulario.controls.marcaId.value ? 'Opcional' : 'Elige una marca primero'"
+          [nzDisabled]="!formulario.controls.marcaId.value"
+          nzAllowClear
+        >
+          @for (m of modelos(); track m.id) {
+            <nz-option [nzValue]="m.id" [nzLabel]="m.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label>Ubicación</nz-form-label>
+      <nz-form-control nzErrorTip="Máximo 10 caracteres">
+        <input nz-input formControlName="ubicacion" maxlength="10" placeholder="ej. A-3" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Peso (kg)</nz-form-label>
+      <nz-form-control>
+        <nz-input-number formControlName="peso" [nzMin]="0" [nzStep]="0.1" style="width: 100%"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <nz-form-item>
+    <nz-form-label>Imagen</nz-form-label>
+    <nz-form-control>
+      <div class="imagen">
+        @if (imagenUrl()) {
+          <img [src]="urlImagen(imagenUrl()!)" alt="Imagen del producto" class="imagen-preview" />
+          <button nz-button type="button" nzDanger (click)="quitarImagen()">Quitar imagen</button>
+        } @else {
+          <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" (change)="subirImagen($event)" [disabled]="subiendoImagen()" />
+          @if (subiendoImagen()) {
+            <span>Subiendo...</span>
+          }
+        }
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+
+  <h3>Precios</h3>
+  <div formArrayName="precios">
+    @for (fila of precios.controls; track fila; let i = $index) {
+      <div class="fila-precio" [formGroupName]="i">
+        <nz-form-item class="campo">
+          <nz-form-control>
+            <nz-select formControlName="listaPrecioId" nzPlaceHolder="Lista de precio">
+              @for (l of listasPrecio(); track l.id) {
+                <nz-option [nzValue]="l.id" [nzLabel]="l.nombre"></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item class="campo">
+          <nz-form-control>
+            <nz-input-number formControlName="precio" [nzMin]="0" [nzStep]="0.1" style="width: 100%"></nz-input-number>
+          </nz-form-control>
+        </nz-form-item>
+        <button nz-button nzType="text" nzDanger type="button" (click)="quitarPrecio(i)" [disabled]="precios.length <= 1">
+          <span nz-icon nzType="delete"></span>
+        </button>
+      </div>
+    }
+  </div>
+  <button nz-button type="button" (click)="agregarPrecio()" class="boton-agregar">
+    <span nz-icon nzType="plus"></span>
+    Agregar precio
+  </button>
+
+  <div class="acciones">
+    <button nz-button routerLink="/productos" type="button">Cancelar</button>
+    <button nz-button nzType="primary" [nzLoading]="guardando()" type="submit">Guardar</button>
+  </div>
+</form>

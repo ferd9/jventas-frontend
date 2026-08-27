@@ -1,0 +1,57 @@
+.layout {
+  min-height: 100vh;
+}
+
+.sider {
+  .logo {
+    height: 32px;
+    margin: 16px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 18px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+  .trigger {
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .usuario {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+
+    .avatar {
+      background: #1677ff;
+    }
+
+    .nombre {
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+}
+
+.content {
+  margin: 24px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  min-height: calc(100vh - 64px - 48px);
+}
+
+.alerta-password {
+  margin-bottom: 16px;
+}

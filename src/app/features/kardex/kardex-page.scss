@@ -1,0 +1,26 @@
+h2 {
+  margin: 0 0 16px;
+}
+
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filtro {
+  width: 260px;
+}
+
+.filtro-producto {
+  width: 320px;
+}
+
+.stock-tag {
+  font-size: 14px;
+}
+
+.mensaje {
+  color: rgba(0, 0, 0, 0.45);
+}

@@ -1,0 +1,66 @@
+<div class="encabezado">
+  <h2>Tipos de documento</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nuevo tipo de documento
+  </button>
+</div>
+
+<nz-table [nzData]="tipos()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Aplica a</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (tipo of tipos(); track tipo.id) {
+      <tr>
+        <td>{{ tipo.nombre }}</td>
+        <td>
+          @if (tipo.aplicaCompra) {
+            <nz-tag>Compra</nz-tag>
+          }
+          @if (tipo.aplicaVenta) {
+            <nz-tag>Venta</nz-tag>
+          }
+          @if (!tipo.aplicaCompra && !tipo.aplicaVenta) {
+            —
+          }
+        </td>
+        <td><a (click)="abrirEditar(tipo)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar tipo de documento' : 'Nuevo tipo de documento'"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Nombre</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="nombre" placeholder="ej. Factura" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Aplica a</nz-form-label>
+        <nz-form-control>
+          <label nz-checkbox formControlName="aplicaCompra">Compras</label>
+          <label nz-checkbox formControlName="aplicaVenta">Ventas</label>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

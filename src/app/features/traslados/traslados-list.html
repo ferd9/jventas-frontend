@@ -1,0 +1,105 @@
+<div class="encabezado">
+  <h2>Traslados</h2>
+  <button nz-button nzType="primary" routerLink="/traslados/nuevo">
+    <span nz-icon nzType="plus"></span>
+    Nuevo traslado
+  </button>
+</div>
+
+<nz-table
+  #tabla
+  [nzData]="traslados()"
+  [nzFrontPagination]="false"
+  [nzTotal]="total()"
+  [nzLoading]="cargando()"
+  [nzPageSize]="20"
+  (nzQueryParams)="cambiarPagina($event)"
+>
+  <thead>
+    <tr>
+      <th>Origen</th>
+      <th>Destino</th>
+      <th>Estado</th>
+      <th>Fecha</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (traslado of tabla.data; track traslado.id) {
+      <tr>
+        <td>{{ traslado.almacenOrigenNombre }}</td>
+        <td>{{ traslado.almacenDestinoNombre }}</td>
+        <td>
+          <nz-tag [nzColor]="estadoColor[traslado.estado]">{{ estadoLabel[traslado.estado] }}</nz-tag>
+        </td>
+        <td>{{ traslado.fecha }}</td>
+        <td><a (click)="verDetalle(traslado)">Ver</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-drawer [nzVisible]="drawerVisible()" nzTitle="Detalle de traslado" nzWidth="560" (nzOnClose)="cerrarDrawer()">
+  <ng-container *nzDrawerContent>
+    @if (drawerCargando()) {
+      <p>Cargando...</p>
+    } @else if (trasladoSeleccionado(); as traslado) {
+      @if (errorAccion()) {
+        <p class="error">{{ errorAccion() }}</p>
+      }
+
+      <div class="cabecera-detalle">
+        <div>
+          <strong>{{ traslado.almacenOrigenNombre }} → {{ traslado.almacenDestinoNombre }}</strong>
+          <nz-tag [nzColor]="estadoColor[traslado.estado]">{{ estadoLabel[traslado.estado] }}</nz-tag>
+        </div>
+        <div>Registrado por: {{ traslado.usuarioNombre }} · Fecha: {{ traslado.fecha }}</div>
+        @if (traslado.observaciones) {
+          <div>Observaciones: {{ traslado.observaciones }}</div>
+        }
+      </div>
+
+      <table class="tabla-lineas">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (linea of traslado.detalles; track linea.id) {
+            <tr>
+              <td>{{ linea.productoNombre }}</td>
+              <td>{{ linea.cantidad }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="acciones-detalle">
+        @if (traslado.estado === 'PENDIENTE' && authService.tienePermiso('traslado:completar')) {
+          <button
+            nz-button
+            nzType="primary"
+            nz-popconfirm
+            nzPopconfirmTitle="¿Completar este traslado? El stock pasa al almacén destino."
+            (nzOnConfirm)="completar(traslado)"
+          >
+            Completar
+          </button>
+        }
+        @if (traslado.estado === 'PENDIENTE' && authService.tienePermiso('traslado:anular')) {
+          <button
+            nz-button
+            nzDanger
+            nz-popconfirm
+            nzPopconfirmTitle="¿Anular este traslado?"
+            (nzOnConfirm)="anular(traslado)"
+          >
+            Anular
+          </button>
+        }
+      </div>
+    }
+  </ng-container>
+</nz-drawer>

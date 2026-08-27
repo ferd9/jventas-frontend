@@ -1,0 +1,31 @@
+.contenedor-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f0f2f5;
+}
+
+.tarjeta-login {
+  width: 360px;
+  padding: 32px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .subtitulo {
+    margin: 0 0 24px;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  .alerta {
+    margin-bottom: 16px;
+  }
+}

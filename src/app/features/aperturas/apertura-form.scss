@@ -1,0 +1,38 @@
+.ayuda {
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 16px;
+  max-width: 640px;
+}
+
+.alerta {
+  margin-bottom: 16px;
+}
+
+.campo-almacen {
+  max-width: 320px;
+}
+
+.linea {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 8px;
+
+  .campo {
+    width: 200px;
+  }
+
+  .campo-producto {
+    flex: 1;
+    width: auto;
+  }
+}
+
+.boton-agregar {
+  margin-bottom: 24px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+}

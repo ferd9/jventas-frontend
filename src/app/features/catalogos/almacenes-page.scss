@@ -1,0 +1,51 @@
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.alerta {
+  margin-bottom: 16px;
+}
+
+.error {
+  color: #cf1322;
+  margin-bottom: 12px;
+}
+
+.fila {
+  display: flex;
+  gap: 16px;
+
+  .campo {
+    flex: 1;
+  }
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+}
+
+.tabla-encargados {
+  margin-bottom: 16px;
+}
+
+.form-encargado {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  .campo {
+    flex: 1;
+  }
+
+  .campo-cargo {
+    width: 140px;
+  }
+}

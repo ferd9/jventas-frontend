@@ -1,0 +1,123 @@
+<nz-layout class="layout">
+  <nz-sider nzCollapsible [(nzCollapsed)]="colapsado" [nzTrigger]="null" class="sider">
+    <div class="logo">{{ colapsado ? 'JV' : 'JVentas' }}</div>
+    <ul nz-menu nzTheme="dark" nzMode="inline">
+      <li nz-menu-item routerLink="/compras" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="shopping-cart"></span>
+        <span>Compras</span>
+      </li>
+      <li nz-menu-item routerLink="/ventas" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="dollar"></span>
+        <span>Ventas</span>
+      </li>
+      <li nz-menu-item routerLink="/productos" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="appstore"></span>
+        <span>Productos</span>
+      </li>
+      <li nz-menu-item routerLink="/kardex" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="history"></span>
+        <span>Kardex</span>
+      </li>
+      <li nz-menu-item routerLink="/aperturas" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="import"></span>
+        <span>Apertura de stock</span>
+      </li>
+      <li nz-menu-item routerLink="/traslados" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="swap"></span>
+        <span>Traslados</span>
+      </li>
+      <li nz-menu-item routerLink="/reportes" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="bar-chart"></span>
+        <span>Reportes</span>
+      </li>
+      <li nz-menu-item routerLink="/clientes" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="team"></span>
+        <span>Clientes</span>
+      </li>
+      <li nz-menu-item routerLink="/proveedores" routerLinkActive="ant-menu-item-selected">
+        <span nz-icon nzType="shop"></span>
+        <span>Proveedores</span>
+      </li>
+      <li nz-submenu nzTitle="Catálogos" nzIcon="tags">
+        <ul>
+          <li nz-menu-item routerLink="/almacenes" routerLinkActive="ant-menu-item-selected">Almacenes</li>
+          <li nz-menu-item routerLink="/categorias" routerLinkActive="ant-menu-item-selected">Categorías</li>
+          <li nz-menu-item routerLink="/marcas" routerLinkActive="ant-menu-item-selected">Marcas</li>
+          <li nz-menu-item routerLink="/listas-precio" routerLinkActive="ant-menu-item-selected">Listas de precio</li>
+          <li nz-menu-item routerLink="/monedas" routerLinkActive="ant-menu-item-selected">Monedas</li>
+          <li nz-menu-item routerLink="/modelos" routerLinkActive="ant-menu-item-selected">Modelos</li>
+          <li nz-menu-item routerLink="/unidades-medida" routerLinkActive="ant-menu-item-selected">Unidades de medida</li>
+          <li nz-menu-item routerLink="/impuestos" routerLinkActive="ant-menu-item-selected">Impuestos</li>
+          <li nz-menu-item routerLink="/metodos-pago" routerLinkActive="ant-menu-item-selected">Métodos de pago</li>
+          <li nz-menu-item routerLink="/tipos-documento" routerLinkActive="ant-menu-item-selected">Tipos de documento</li>
+          <li nz-menu-item routerLink="/series-documento" routerLinkActive="ant-menu-item-selected">Series de documento</li>
+          <li nz-menu-item routerLink="/cargos" routerLinkActive="ant-menu-item-selected">Cargos</li>
+        </ul>
+      </li>
+      <li nz-submenu nzTitle="Administración" nzIcon="setting">
+        <ul>
+          <li nz-menu-item routerLink="/usuarios" routerLinkActive="ant-menu-item-selected">Usuarios</li>
+          <li nz-menu-item routerLink="/roles" routerLinkActive="ant-menu-item-selected">Roles</li>
+        </ul>
+      </li>
+    </ul>
+  </nz-sider>
+
+  <nz-layout>
+    <nz-header class="header">
+      <span nz-icon [nzType]="colapsado ? 'menu-unfold' : 'menu-fold'" class="trigger" (click)="colapsado = !colapsado"></span>
+
+      <div class="usuario" nz-dropdown [nzDropdownMenu]="menuUsuario" nzTrigger="click">
+        <nz-avatar nzIcon="user" class="avatar"></nz-avatar>
+        <span class="nombre">{{ authService.nombreCompleto() }}</span>
+        <span nz-icon nzType="down"></span>
+      </div>
+      <nz-dropdown-menu #menuUsuario="nzDropdownMenu">
+        <ul nz-menu>
+          <li nz-menu-item (click)="abrirCambiarPassword()">Cambiar contraseña</li>
+          <li nz-menu-item (click)="cerrarSesion()">Cerrar sesión</li>
+        </ul>
+      </nz-dropdown-menu>
+    </nz-header>
+
+    <nz-content class="content">
+      <router-outlet />
+    </nz-content>
+  </nz-layout>
+</nz-layout>
+
+<nz-modal
+  [nzVisible]="passwordModalVisible()"
+  nzTitle="Cambiar contraseña"
+  (nzOnCancel)="cancelarCambiarPassword()"
+  (nzOnOk)="guardarPassword()"
+  [nzOkLoading]="guardandoPassword()"
+>
+  <ng-container *nzModalContent>
+    @if (errorPassword()) {
+      <nz-alert nzType="error" [nzMessage]="errorPassword()" nzShowIcon class="alerta-password"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formularioPassword">
+      <nz-form-item>
+        <nz-form-label nzRequired>Contraseña actual</nz-form-label>
+        <nz-form-control>
+          <input nz-input type="password" formControlName="passwordActual" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Contraseña nueva</nz-form-label>
+        <nz-form-control nzErrorTip="Debe tener al menos 8 caracteres">
+          <input nz-input type="password" formControlName="passwordNueva" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Confirmar contraseña nueva</nz-form-label>
+        <nz-form-control>
+          <input nz-input type="password" formControlName="confirmarPassword" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

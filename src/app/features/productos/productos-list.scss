@@ -1,0 +1,25 @@
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.buscador {
+  max-width: 320px;
+  margin-bottom: 16px;
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+}
+
+.error {
+  color: #cf1322;
+  margin-bottom: 12px;
+}

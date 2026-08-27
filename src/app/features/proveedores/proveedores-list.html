@@ -1,0 +1,67 @@
+<div class="encabezado">
+  <h2>Proveedores</h2>
+  <button nz-button nzType="primary" routerLink="/proveedores/nuevo">
+    <span nz-icon nzType="plus"></span>
+    Nuevo proveedor
+  </button>
+</div>
+
+<input
+  nz-input
+  placeholder="Buscar por razón social o RUC..."
+  class="buscador"
+  [ngModel]="busqueda()"
+  (ngModelChange)="buscar($event)"
+/>
+
+<nz-table
+  #tabla
+  [nzData]="proveedores()"
+  [nzFrontPagination]="false"
+  [nzTotal]="total()"
+  [nzLoading]="cargando()"
+  [nzPageSize]="20"
+  (nzQueryParams)="cambiarPagina($event)"
+>
+  <thead>
+    <tr>
+      <th>RUC</th>
+      <th>Razón social</th>
+      <th>Contacto</th>
+      <th>Teléfono</th>
+      <th>Estado</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (proveedor of tabla.data; track proveedor.id) {
+      <tr>
+        <td>{{ proveedor.ruc }}</td>
+        <td>{{ proveedor.razonSocial }}</td>
+        <td>{{ proveedor.nombreContacto || '—' }}</td>
+        <td>{{ proveedor.telefono || '—' }}</td>
+        <td>
+          @if (proveedor.activo) {
+            <nz-tag nzColor="success">Activo</nz-tag>
+          } @else {
+            <nz-tag nzColor="default">Inactivo</nz-tag>
+          }
+        </td>
+        <td class="acciones">
+          <a [routerLink]="['/proveedores', proveedor.id, 'editar']">Editar</a>
+          @if (proveedor.activo) {
+            <a
+              nz-popconfirm
+              nzPopconfirmTitle="¿Desactivar este proveedor?"
+              (nzOnConfirm)="desactivar(proveedor)"
+            >
+              Desactivar
+            </a>
+          } @else {
+            <a (click)="reactivar(proveedor)">Reactivar</a>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</nz-table>

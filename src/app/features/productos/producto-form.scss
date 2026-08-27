@@ -1,0 +1,46 @@
+.alerta {
+  margin-bottom: 16px;
+}
+
+.fila {
+  display: flex;
+  gap: 16px;
+
+  .campo {
+    flex: 1;
+  }
+}
+
+.fila-precio {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  .campo {
+    flex: 1;
+  }
+}
+
+.boton-agregar {
+  margin-bottom: 24px;
+}
+
+.imagen {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .imagen-preview {
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #d9d9d9;
+  }
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

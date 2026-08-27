@@ -1,0 +1,257 @@
+<div class="encabezado">
+  <h2>Ventas</h2>
+  <button nz-button nzType="primary" routerLink="/ventas/nueva">
+    <span nz-icon nzType="plus"></span>
+    Nueva venta
+  </button>
+</div>
+
+<div class="filtros">
+  <nz-select
+    class="filtro-cliente"
+    [ngModel]="clienteId()"
+    (ngModelChange)="clienteId.set($event); filtrar()"
+    nzPlaceHolder="Todos los clientes"
+    nzAllowClear
+    nzShowSearch
+  >
+    @for (c of clientes(); track c.id) {
+      <nz-option [nzValue]="c.id" [nzLabel]="c.nombre + ' ' + c.apellidos"></nz-option>
+    }
+  </nz-select>
+
+  <input type="date" class="filtro-fecha" [ngModel]="fechaDesde()" (ngModelChange)="fechaDesde.set($event); filtrar()" />
+  <span class="separador">a</span>
+  <input type="date" class="filtro-fecha" [ngModel]="fechaHasta()" (ngModelChange)="fechaHasta.set($event); filtrar()" />
+</div>
+
+<nz-table
+  #tabla
+  [nzData]="ventas()"
+  [nzFrontPagination]="false"
+  [nzTotal]="total()"
+  [nzLoading]="cargando()"
+  [nzPageSize]="20"
+  (nzQueryParams)="cambiarPagina($event)"
+>
+  <thead>
+    <tr>
+      <th>Documento</th>
+      <th>Cliente</th>
+      <th>Estado</th>
+      <th>Total</th>
+      <th>Fecha</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (venta of tabla.data; track venta.id) {
+      <tr>
+        <td>{{ venta.numeroDocumento }}</td>
+        <td>{{ venta.clienteNombre }}</td>
+        <td>
+          <nz-tag [nzColor]="estadoColor[venta.estado]">{{ estadoLabel[venta.estado] }}</nz-tag>
+        </td>
+        <td>{{ venta.total | number: '1.2-2' }}</td>
+        <td>{{ venta.fecha }}</td>
+        <td><a (click)="verDetalle(venta)">Ver</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-drawer [nzVisible]="drawerVisible()" nzTitle="Detalle de venta" nzWidth="560" (nzOnClose)="cerrarDrawer()">
+  <ng-container *nzDrawerContent>
+    @if (drawerCargando()) {
+      <p>Cargando...</p>
+    } @else if (ventaSeleccionada(); as venta) {
+      @if (errorAnular()) {
+        <p class="error-anular">{{ errorAnular() }}</p>
+      }
+
+      <div class="cabecera-detalle">
+        <div>
+          <strong>{{ venta.numeroDocumento }}</strong> · {{ venta.tipoDocumentoNombre }}
+          <nz-tag [nzColor]="estadoColor[venta.estado]">{{ estadoLabel[venta.estado] }}</nz-tag>
+        </div>
+        <div>Cliente: {{ venta.clienteNombre }}</div>
+        <div>Almacén: {{ venta.almacenNombre }} · Moneda: {{ venta.monedaNombre }}</div>
+        <div>Registrado por: {{ venta.usuarioNombre }} · Fecha: {{ venta.fecha }}</div>
+        @if (venta.observaciones) {
+          <div>Observaciones: {{ venta.observaciones }}</div>
+        }
+      </div>
+
+      <table class="tabla-lineas">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cant.</th>
+            <th>P. unit.</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (linea of venta.detalles; track linea.id) {
+            <tr>
+              <td>{{ linea.productoNombre }}</td>
+              <td>{{ linea.cantidad }}</td>
+              <td>{{ linea.precioUnitario | number: '1.2-2' }}</td>
+              <td>{{ linea.subtotal | number: '1.2-2' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="totales">
+        <div>Subtotal: {{ venta.subtotal | number: '1.2-2' }}</div>
+        <div>IGV: {{ venta.igv | number: '1.2-2' }}</div>
+        <div class="total-final">Total: {{ venta.total | number: '1.2-2' }}</div>
+        @if (saldo(); as s) {
+          <div>Pagado: {{ s.pagado | number: '1.2-2' }}</div>
+          <div class="saldo-pendiente">Saldo: {{ s.saldo | number: '1.2-2' }}</div>
+        }
+      </div>
+
+      <div class="acciones-detalle">
+        @if (venta.estado === 'PENDIENTE' && authService.tienePermiso('venta:anular')) {
+          <button
+            nz-button
+            nzDanger
+            nz-popconfirm
+            nzPopconfirmTitle="¿Anular esta venta? Revierte el stock."
+            (nzOnConfirm)="anular(venta)"
+          >
+            Anular venta
+          </button>
+        }
+        @if (venta.estado !== 'ANULADO' && authService.tienePermiso('venta:anular')) {
+          <button nz-button (click)="abrirDevolucion()">Registrar devolución</button>
+        }
+        @if (venta.estado !== 'ANULADO' && saldo() && saldo()!.saldo > 0 && authService.tienePermiso('pago:registrar')) {
+          <button nz-button nzType="primary" (click)="abrirPago()">Registrar pago</button>
+        }
+      </div>
+
+      @if (pagos().length > 0) {
+        <h3 class="titulo-devoluciones">Pagos registrados</h3>
+        @for (p of pagos(); track p.id) {
+          <div class="devolucion-item">
+            {{ p.fechaPago }} · {{ p.metodoPagoNombre }} · <strong>{{ p.monto | number: '1.2-2' }}</strong>
+            @if (p.referencia) {
+              · {{ p.referencia }}
+            }
+          </div>
+        }
+      }
+
+      @if (devoluciones().length > 0) {
+        <h3 class="titulo-devoluciones">Devoluciones registradas</h3>
+        @for (d of devoluciones(); track d.id) {
+          <div class="devolucion-item">
+            <div>{{ d.fecha }} · {{ d.usuarioLogin }} · <strong>{{ d.montoTotal | number: '1.2-2' }}</strong></div>
+            @if (d.motivo) {
+              <div class="devolucion-motivo">{{ d.motivo }}</div>
+            }
+            <ul>
+              @for (linea of d.lineas; track linea.id) {
+                <li>{{ linea.productoNombre }} × {{ linea.cantidad }} -- {{ linea.monto | number: '1.2-2' }}</li>
+              }
+            </ul>
+          </div>
+        }
+      }
+    }
+  </ng-container>
+</nz-drawer>
+
+<nz-modal
+  [nzVisible]="devolucionModalVisible()"
+  nzTitle="Registrar devolución"
+  nzWidth="640"
+  (nzOnCancel)="cancelarDevolucion()"
+  (nzOnOk)="guardarDevolucion()"
+  [nzOkLoading]="devolucionGuardando()"
+>
+  <ng-container *nzModalContent>
+    @if (devolucionError()) {
+      <p class="error-anular">{{ devolucionError() }}</p>
+    }
+    <p class="nota-devolucion">Marca las líneas que el cliente devuelve, con la cantidad y -- si el producto lleva número de serie -- cuáles unidades concretas.</p>
+
+    <table class="tabla-devolucion">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Producto</th>
+          <th>Cant. vendida</th>
+          <th>Cant. a devolver</th>
+          <th>Números de serie (si aplica)</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (fila of devolucionLineas.controls; track fila) {
+          <tr [formGroup]="fila">
+            <td><label nz-checkbox formControlName="incluir"></label></td>
+            <td>{{ fila.controls.productoNombre.value }}</td>
+            <td>{{ fila.controls.cantidadOriginal.value }}</td>
+            <td>
+              <nz-input-number
+                formControlName="cantidad"
+                [nzMin]="1"
+                [nzMax]="fila.controls.cantidadOriginal.value"
+                style="width: 90px"
+              ></nz-input-number>
+            </td>
+            <td><input nz-input formControlName="numerosSerieTexto" placeholder="ej. SN-001, SN-002" /></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <label class="campo-motivo">
+      Motivo
+      <textarea nz-input [formControl]="devolucionMotivo" rows="2"></textarea>
+    </label>
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [nzVisible]="pagoModalVisible()"
+  nzTitle="Registrar pago"
+  (nzOnCancel)="cancelarPago()"
+  (nzOnOk)="guardarPago()"
+  [nzOkLoading]="pagoGuardando()"
+>
+  <ng-container *nzModalContent>
+    @if (pagoError()) {
+      <p class="error-anular">{{ pagoError() }}</p>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="pagoFormulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Método de pago</nz-form-label>
+        <nz-form-control>
+          <nz-select formControlName="metodoPagoId" nzPlaceHolder="Selecciona">
+            @for (m of metodosPago(); track m.id) {
+              <nz-option [nzValue]="m.id" [nzLabel]="m.nombre"></nz-option>
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Monto</nz-form-label>
+        <nz-form-control>
+          <nz-input-number formControlName="monto" [nzMin]="0.01" [nzStep]="0.1" style="width: 100%"></nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Referencia</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="referencia" placeholder="ej. N° de operación" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

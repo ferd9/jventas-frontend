@@ -1,0 +1,86 @@
+<div class="encabezado">
+  <h2>Roles</h2>
+  <button nz-button nzType="primary" (click)="abrirCrear()">
+    <span nz-icon nzType="plus"></span>
+    Nuevo rol
+  </button>
+</div>
+
+<nz-table [nzData]="roles()" [nzLoading]="cargando()" [nzShowPagination]="false">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Descripción</th>
+      <th>Permisos</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (rol of roles(); track rol.id) {
+      <tr>
+        <td>{{ rol.nombre }}</td>
+        <td>{{ rol.descripcion || '—' }}</td>
+        <td>
+          @for (p of rol.permisos; track p.id) {
+            <nz-tag>{{ p.codigo }}</nz-tag>
+          }
+          @if (rol.permisos.length === 0) {
+            —
+          }
+        </td>
+        <td><a (click)="abrirEditar(rol)">Editar</a></td>
+      </tr>
+    }
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [nzVisible]="modalVisible()"
+  [nzTitle]="editandoId() ? 'Editar rol' : 'Nuevo rol'"
+  nzWidth="640"
+  (nzOnCancel)="cancelar()"
+  (nzOnOk)="guardar()"
+  [nzOkLoading]="guardando()"
+>
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <div class="fila">
+        <nz-form-item class="campo">
+          <nz-form-label nzRequired>Nombre</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="nombre" placeholder="ej. Vendedor" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="campo">
+          <nz-form-label>Descripción</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="descripcion" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </form>
+
+    <h3>Permisos</h3>
+    <div class="grupos-permisos">
+      @for (grupo of gruposPermisos(); track grupo.modulo) {
+        <div class="grupo">
+          <div class="grupo-titulo">{{ grupo.modulo }}</div>
+          @for (permiso of grupo.permisos; track permiso.id) {
+            <label
+              nz-checkbox
+              [ngModel]="estaSeleccionado(permiso.id)"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="togglePermiso(permiso.id)"
+            >
+              {{ permiso.codigo }}
+            </label>
+          }
+        </div>
+      }
+    </div>
+  </ng-container>
+</nz-modal>

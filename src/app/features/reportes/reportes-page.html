@@ -1,0 +1,108 @@
+<h2>Reportes</h2>
+
+<nz-tabs>
+  @if (authService.tienePermiso('venta:ver')) {
+    <nz-tab nzTitle="Cuentas por cobrar">
+      <nz-table [nzData]="cuentasPorCobrar()" [nzLoading]="cargandoCobrar()" [nzShowPagination]="false">
+        <thead>
+          <tr>
+            <th>Documento</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Vencimiento</th>
+            <th>Total</th>
+            <th>Pagado</th>
+            <th>Saldo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of cuentasPorCobrar(); track c.ventaId) {
+            <tr>
+              <td>{{ c.numeroDocumento }}</td>
+              <td>{{ c.clienteNombre }}</td>
+              <td>{{ c.fecha }}</td>
+              <td>
+                {{ c.fechaVencimiento || '—' }}
+                @if (c.vencido) {
+                  <nz-tag nzColor="error">Vencido</nz-tag>
+                }
+              </td>
+              <td>{{ c.total | number: '1.2-2' }}</td>
+              <td>{{ c.pagado | number: '1.2-2' }}</td>
+              <td><strong>{{ c.saldo | number: '1.2-2' }}</strong></td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+      @if (cuentasPorCobrar().length > 0) {
+        <div class="total-general">Total por cobrar: {{ totalSaldoCobrar() | number: '1.2-2' }}</div>
+      }
+    </nz-tab>
+  }
+
+  @if (authService.tienePermiso('compra:ver')) {
+    <nz-tab nzTitle="Cuentas por pagar">
+      <nz-table [nzData]="cuentasPorPagar()" [nzLoading]="cargandoPagar()" [nzShowPagination]="false">
+        <thead>
+          <tr>
+            <th>Documento</th>
+            <th>Proveedor</th>
+            <th>Fecha</th>
+            <th>Vencimiento</th>
+            <th>Total</th>
+            <th>Pagado</th>
+            <th>Saldo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of cuentasPorPagar(); track c.compraId) {
+            <tr>
+              <td>{{ c.numeroDocumento }}</td>
+              <td>{{ c.proveedorRazonSocial }}</td>
+              <td>{{ c.fecha }}</td>
+              <td>
+                {{ c.fechaVencimiento || '—' }}
+                @if (c.vencido) {
+                  <nz-tag nzColor="error">Vencido</nz-tag>
+                }
+              </td>
+              <td>{{ c.total | number: '1.2-2' }}</td>
+              <td>{{ c.pagado | number: '1.2-2' }}</td>
+              <td><strong>{{ c.saldo | number: '1.2-2' }}</strong></td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+      @if (cuentasPorPagar().length > 0) {
+        <div class="total-general">Total por pagar: {{ totalSaldoPagar() | number: '1.2-2' }}</div>
+      }
+    </nz-tab>
+  }
+
+  @if (authService.tienePermiso('stock:ver')) {
+    <nz-tab nzTitle="Stock bajo el mínimo">
+      <nz-table [nzData]="stockBajoMinimo()" [nzLoading]="cargandoStock()" [nzShowPagination]="false">
+        <thead>
+          <tr>
+            <th>Almacén</th>
+            <th>Producto</th>
+            <th>Stock actual</th>
+            <th>Stock mínimo</th>
+            <th>Actualizado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of stockBajoMinimo(); track s.almacenId + '-' + s.productoId) {
+            <tr>
+              <td>{{ s.almacenNombre }}</td>
+              <td>{{ s.productoNombre }}</td>
+              <td><nz-tag nzColor="error">{{ s.cantidadActual }}</nz-tag></td>
+              <td>{{ stockMinimoDe(s.productoId) ?? '—' }}</td>
+              <td>{{ s.actualizadoEn | date: 'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          }
+        </tbody>
+      </nz-table>
+    </nz-tab>
+  }
+</nz-tabs>

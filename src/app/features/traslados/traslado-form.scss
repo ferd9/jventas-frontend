@@ -1,0 +1,42 @@
+.alerta {
+  margin-bottom: 16px;
+}
+
+.fila {
+  display: flex;
+  gap: 16px;
+
+  .campo {
+    flex: 1;
+  }
+}
+
+.linea {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  .campo {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .campo-producto {
+    flex: 2;
+  }
+
+  button {
+    margin-top: 30px;
+  }
+}
+
+.boton-agregar {
+  margin-bottom: 24px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

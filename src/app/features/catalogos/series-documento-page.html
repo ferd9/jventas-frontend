@@ -1,0 +1,89 @@
+<div class="encabezado">
+  <h2>Series de documento</h2>
+  <button
+    nz-button
+    nzType="primary"
+    [disabled]="!filtroAlmacenId() || !filtroTipoDocumentoId()"
+    (click)="abrirCrear()"
+  >
+    <span nz-icon nzType="plus"></span>
+    Nueva serie
+  </button>
+</div>
+
+<p class="ayuda">Elige un almacén y un tipo de documento para ver (o crear) sus series de numeración correlativa.</p>
+
+<div class="filtros">
+  <nz-select
+    class="campo"
+    [ngModel]="filtroAlmacenId()"
+    (ngModelChange)="cambiarFiltroAlmacen($event)"
+    nzPlaceHolder="Selecciona un almacén"
+  >
+    @for (a of almacenes(); track a.id) {
+      <nz-option [nzValue]="a.id" [nzLabel]="a.nombre"></nz-option>
+    }
+  </nz-select>
+
+  <nz-select
+    class="campo"
+    [ngModel]="filtroTipoDocumentoId()"
+    (ngModelChange)="cambiarFiltroTipoDocumento($event)"
+    nzPlaceHolder="Selecciona un tipo de documento"
+  >
+    @for (t of tiposDocumento(); track t.id) {
+      <nz-option [nzValue]="t.id" [nzLabel]="t.nombre"></nz-option>
+    }
+  </nz-select>
+</div>
+
+@if (errorFiltro()) {
+  <nz-alert nzType="error" [nzMessage]="errorFiltro()" nzShowIcon class="alerta"></nz-alert>
+}
+
+@if (filtroAlmacenId() && filtroTipoDocumentoId()) {
+  <nz-table [nzData]="series()" [nzLoading]="cargando()" [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th>Serie</th>
+        <th>Correlativo actual</th>
+        <th>Próximo número</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (s of series(); track s.id) {
+        <tr>
+          <td>{{ s.serie }}</td>
+          <td>{{ s.correlativoActual }}</td>
+          <td>{{ s.proximoNumero }}</td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+}
+
+<nz-modal [nzVisible]="modalVisible()" nzTitle="Nueva serie" (nzOnCancel)="cancelar()" (nzOnOk)="guardar()" [nzOkLoading]="guardando()">
+  <ng-container *nzModalContent>
+    @if (error()) {
+      <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+    }
+    <form nz-form nzLayout="vertical" [formGroup]="formulario">
+      <nz-form-item>
+        <nz-form-label nzRequired>Serie</nz-form-label>
+        <nz-form-control
+          nzExtra="ej. F001 -- el correlativo se genera solo a partir de acá"
+          [nzErrorTip]="serieErrorTpl"
+        >
+          <input nz-input formControlName="serie" maxlength="10" placeholder="ej. F001" />
+        </nz-form-control>
+        <ng-template #serieErrorTpl let-control>
+          @if (control.hasError('required')) {
+            Campo obligatorio
+          } @else if (control.hasError('maxlength')) {
+            Máximo 10 caracteres
+          }
+        </ng-template>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

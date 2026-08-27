@@ -1,0 +1,146 @@
+<h2>{{ usuarioId() ? 'Editar usuario' : 'Nuevo usuario' }}</h2>
+
+@if (error()) {
+  <nz-alert nzType="error" [nzMessage]="error()" nzShowIcon class="alerta"></nz-alert>
+}
+
+<form nz-form nzLayout="vertical" [formGroup]="formulario" (ngSubmit)="enviar()">
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>DNI</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="dni" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Código</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="codigo" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Usuario (login)</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="login" />
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Nombre</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="nombre" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Apellidos</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="apellidos" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Sexo</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="sexo" nzPlaceHolder="Selecciona">
+          @for (s of sexos; track s.valor) {
+            <nz-option [nzValue]="s.valor" [nzLabel]="s.etiqueta"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  @if (!usuarioId()) {
+    <nz-form-item>
+      <nz-form-label nzRequired>Contraseña</nz-form-label>
+      <nz-form-control nzErrorTip="Debe tener al menos 8 caracteres">
+        <input nz-input type="password" formControlName="password" />
+      </nz-form-control>
+    </nz-form-item>
+  }
+
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label>Fecha de nacimiento</nz-form-label>
+      <nz-form-control>
+        <input type="date" nz-input formControlName="fechaNacimiento" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Teléfono</nz-form-label>
+      <nz-form-control [nzErrorTip]="telefonoErrorTpl">
+        <input nz-input formControlName="telefono" maxlength="15" />
+      </nz-form-control>
+      <ng-template #telefonoErrorTpl let-control>
+        @if (control.hasError('required')) {
+          Campo obligatorio
+        } @else if (control.hasError('maxlength')) {
+          Máximo 15 caracteres
+        }
+      </ng-template>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Teléfono alternativo</nz-form-label>
+      <nz-form-control nzErrorTip="Máximo 15 caracteres">
+        <input nz-input formControlName="telefono2" maxlength="15" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label>Celular</nz-form-label>
+      <nz-form-control nzErrorTip="Máximo 15 caracteres">
+        <input nz-input formControlName="celular" maxlength="15" />
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div class="fila">
+    <nz-form-item class="campo">
+      <nz-form-label>Email</nz-form-label>
+      <nz-form-control>
+        <input nz-input formControlName="email" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item class="campo">
+      <nz-form-label nzRequired>Cargo</nz-form-label>
+      <nz-form-control>
+        <nz-select formControlName="cargoId" nzPlaceHolder="Selecciona un cargo">
+          @for (c of cargos(); track c.id) {
+            <nz-option [nzValue]="c.id" [nzLabel]="c.nombre"></nz-option>
+          }
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <nz-form-item>
+    <nz-form-label>Roles</nz-form-label>
+    <nz-form-control>
+      <nz-select formControlName="rolIds" nzMode="multiple" nzPlaceHolder="Selecciona los roles">
+        @for (r of roles(); track r.id) {
+          <nz-option [nzValue]="r.id" [nzLabel]="r.nombre"></nz-option>
+        }
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+
+  <nz-form-item>
+    <nz-form-label>Descripción</nz-form-label>
+    <nz-form-control>
+      <textarea nz-input formControlName="descripcion" rows="2"></textarea>
+    </nz-form-control>
+  </nz-form-item>
+
+  <div class="acciones">
+    <button nz-button routerLink="/usuarios" type="button">Cancelar</button>
+    <button nz-button nzType="primary" [nzLoading]="guardando()" type="submit">Guardar</button>
+  </div>
+</form>
