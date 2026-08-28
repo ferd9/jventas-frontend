@@ -1,0 +1,32 @@
+name: Deploy frontend to Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm ci
+      - run: npm run build -- --configuration production
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: jventas-app
+          workload_identity_provider: projects/327145777303/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider
+          service_account: github-actions-deployer@jventas-app.iam.gserviceaccount.com
+
+      - name: Deploy to Firebase Hosting
+        run: npx firebase deploy --only hosting --project jventas-app --non-interactive
