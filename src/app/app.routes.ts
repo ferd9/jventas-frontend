@@ -7,6 +7,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/login/login-page').then((m) => m.LoginPage),
   },
   {
+    path: 'catalogo',
+    loadComponent: () => import('./features/catalogo-publico/catalogo-publico-page').then((m) => m.CatalogoPublicoPage),
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/shell').then((m) => m.Shell),
     canActivate: [authGuard],

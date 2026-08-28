@@ -1,0 +1,75 @@
+<div class="cabecera">
+  <div class="cabecera-contenido">
+    <h1>JVentas</h1>
+    <p class="subtitulo">Catálogo de productos</p>
+    <nz-input-group [nzSuffix]="iconoBuscar" class="buscador">
+      <input
+        nz-input
+        placeholder="Buscar por nombre..."
+        [ngModel]="busqueda()"
+        (ngModelChange)="buscar($event)"
+      />
+    </nz-input-group>
+    <ng-template #iconoBuscar>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+  </div>
+</div>
+
+<div class="contenido">
+  <nz-spin [nzSpinning]="cargando()">
+    @if (!cargando() && productos().length === 0) {
+      <nz-empty nzNotFoundContent="No se encontraron productos"></nz-empty>
+    } @else {
+      <div class="grilla">
+        @for (producto of productos(); track producto.id) {
+          <nz-card class="tarjeta-producto" [nzCover]="portada">
+            <ng-template #portada>
+              <div class="portada">
+                @if (producto.imagenUrl) {
+                  <img [src]="urlImagen(producto.imagenUrl)" [alt]="producto.nombre" />
+                } @else {
+                  <span nz-icon nzType="appstore" class="portada-vacia"></span>
+                }
+              </div>
+            </ng-template>
+
+            <div class="etiquetas">
+              @if (producto.categoriaNombre) {
+                <nz-tag>{{ producto.categoriaNombre }}</nz-tag>
+              }
+              @if (producto.marcaNombre) {
+                <nz-tag>{{ producto.marcaNombre }}</nz-tag>
+              }
+              <nz-tag [nzColor]="producto.disponible ? 'success' : 'default'">
+                {{ producto.disponible ? 'Disponible' : 'Agotado' }}
+              </nz-tag>
+            </div>
+
+            <h3 class="nombre-producto">{{ producto.nombre }}</h3>
+            <p class="codigo-producto">{{ producto.codigo }}</p>
+
+            <div class="precios">
+              @for (precio of producto.precios; track precio.listaPrecioId) {
+                <div class="precio-linea">
+                  <span class="precio-lista">{{ precio.listaPrecioNombre }}</span>
+                  <span class="precio-monto">{{ producto.monedaNombre }} {{ precio.precio | number: '1.2-2' }}</span>
+                </div>
+              } @empty {
+                <span class="sin-precio">Consultar precio</span>
+              }
+            </div>
+          </nz-card>
+        }
+      </div>
+
+      <nz-pagination
+        class="paginador"
+        [nzPageIndex]="pagina()"
+        [nzTotal]="total()"
+        [nzPageSize]="tamano"
+        (nzPageIndexChange)="cambiarPagina($event)"
+      ></nz-pagination>
+    }
+  </nz-spin>
+</div>
