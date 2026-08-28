@@ -2,6 +2,8 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.12.
 
+Ver [`DEPLOYMENT.md`](./DEPLOYMENT.md) para el flujo de despliegue a Firebase Hosting y sus gotchas.
+
 ## Development server
 
 To start a local development server, run:
