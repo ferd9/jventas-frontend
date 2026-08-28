@@ -28,5 +28,7 @@ jobs:
           workload_identity_provider: projects/327145777303/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider
           service_account: github-actions-deployer@jventas-app.iam.gserviceaccount.com
 
+      - run: npm install -g firebase-tools
+
       - name: Deploy to Firebase Hosting
-        run: npx firebase deploy --only hosting --project jventas-app --non-interactive
+        run: firebase deploy --only hosting --project jventas-app --non-interactive
