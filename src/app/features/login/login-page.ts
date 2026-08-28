@@ -39,7 +39,9 @@ export class LoginPage {
     this.error.set(null);
 
     this.authService.iniciarSesion(this.formulario.getRawValue()).subscribe({
-      next: () => this.router.navigateByUrl('/'),
+      // no navegar a '/' -- esa raíz ahora es la vitrina pública (ver
+      // app.routes.ts), un admin recién logueado debe caer en el panel
+      next: () => this.router.navigateByUrl('/productos'),
       error: () => {
         this.error.set('Usuario o contraseña incorrectos');
         this.cargando.set(false);

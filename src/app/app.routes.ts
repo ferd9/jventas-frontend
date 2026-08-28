@@ -7,6 +7,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/login/login-page').then((m) => m.LoginPage),
   },
   {
+    // vitrina pública -- la puerta de entrada de la app. Va primero en la
+    // lista y con pathMatch:'full' a propósito: solo reclama la url raíz
+    // exacta, así el resto de rutas (Shell más abajo, también en path: '')
+    // sigue resolviendo con normalidad.
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./features/catalogo-publico/catalogo-publico-page').then((m) => m.CatalogoPublicoPage),
+  },
+  {
     path: 'catalogo',
     loadComponent: () => import('./features/catalogo-publico/catalogo-publico-page').then((m) => m.CatalogoPublicoPage),
   },
